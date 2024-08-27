@@ -1,0 +1,30 @@
+cd
+ls
+ls .emacs.d
+cd .emacs.d
+ls
+emacs --version
+touch init.el
+exit
+ls
+cd
+ls
+cd projects/
+ls
+cd Notes/
+ls
+cd ..
+cd SC-poster24/
+ls
+cp sdn-arch.png ~/
+exit
+cd ~/
+cd projects/Resume/
+ls
+rm *Iden*
+ls
+pdflatex resume.tex 
+ls
+make
+pdflatex resume.tex 
+pdflatex resume.tex 

@@ -1,0 +1,80 @@
+;; Don't show the splash screen
+(setq inhibit-startup-message t)  ; Comment at end of line!
+(setq visible-bell t) ; Flash when bell rings
+
+;; Turn off some unneeded UI elements
+(menu-bar-mode -1)  ; Leave this one on if you're a beginner!
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(set-fringe-mode 10)        ; Give some breathing room
+
+
+;; Display line numbers in every buffer
+(global-display-line-numbers-mode 1)
+
+;; Load the Modus Vivendi dark theme
+;;(load-theme 'deeper-blue t)
+
+;; Describe symbol: C-h o == It shows documentation for any variable and function in EMACS 
+
+(hl-line-mode) ;; highlights the current line
+(blink-cursor-mode -1) ;;stop blinking the cursor
+
+(column-number-mode)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+		shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; Make ESC quit prompts
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+
+(setq org-support-shift-select t)
+
+
+;;org mode logging config
+;; Enable Org mode
+(require 'org)
+
+;; Define custom TODO states
+(setq org-todo-keywords
+      '((sequence "TODO" "WORKING" "DONE")))
+
+;; Configure logging of time and notes when changing TODO states
+(setq org-log-done 'time)  ;; Log the time when a task is marked as DONE
+(setq org-log-state-changes 'note)  ;; Log a note in the logbook when changing states
+
+;; Optional: Customize the note entry in the logbook
+(defun my-org-log-state-change ()
+  "Add a custom note to the logbook when changing TODO states."
+  (when (member (org-get-todo-state) '("WORKING" "DONE"))
+    (let ((org-log-into-drawer t))
+      (org-add-log-setup
+       (format "State changed to %s on %s"
+               (org-get-todo-state)
+               (format-time-string "%Y-%m-%d %H:%M:%S"))
+       nil))))
+
+;; Hook the custom logging function to state changes
+(add-hook 'org-after-todo-state-change-hook 'my-org-log-state-change)
+
+;; Set up the cycling of TODO states
+(defun my-org-cycle-todo ()
+  "Cycle through TODO states."
+  (interactive)
+  (let ((current-state (org-get-todo-state)))
+    (org-todo
+     (cond
+      ((string= current-state "TODO") "WORKING")
+      ((string= current-state "WORKING") "DONE")
+      (t "TODO")))))
+
+;; Bind the custom cycle function to a key (e.g., 'C-c C-t')
+(define-key org-mode-map (kbd "C-c C-t") 'my-org-cycle-todo)
+
+;; Ensure Org mode is activated
+(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
